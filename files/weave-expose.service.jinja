@@ -1,0 +1,15 @@
+{%- from "kubernetes/map.jinja" import kubernetes_settings with context %}
+[Unit]
+After=weave.service
+After=docker.service
+Requires=docker.service
+Requires=weave.service
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+TimeoutStartSec=0
+EnvironmentFile=-/etc/default/weave.env
+ExecStart={{ kubernetes_settings.weave.bin_directory }}/weave expose
+ExecStop={{ kubernetes_settings.weave.bin_directory }}/weave hide
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+{% import_yaml "kubernetes/defaults.yaml" as default_settings %}
+
+{# Update settings defaults from pillar data #}
+{% set kubernetes_settings = salt['pillar.get'](
+    'kubernetes',
+    default=default_settings.kubernetes,
+    merge=True)
+%}

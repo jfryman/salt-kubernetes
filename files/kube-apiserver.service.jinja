@@ -1,0 +1,38 @@
+{%- from "kubernetes/map.jinja" import kubernetes_settings with context %}
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+ExecStart={{ kubernetes_settings['bin_directory'] }}/kube-apiserver \
+  --admission-control={{ kubernetes_settings['api_server']['admission_control'] | join(',') }} \
+  --advertise-address={{ kubernetes_settings['api_server']['advertise_address'] }} \
+  --allow-privileged=true \
+  --apiserver-count={{ kubernetes_settings['api_server']['count'] }} \
+  --authorization-mode=ABAC \
+  --authorization-policy-file={{ kubernetes_settings['config_directory'] }}/authorization-policy.jsonl \
+  --bind-address={{ kubernetes_settings['api_server']['bind_address'] }} \
+  --enable-swagger-ui={{ kubernetes_settings['api_server']['enable_swagger_ui'] | lower }} \
+  --insecure-bind-address={{ kubernetes_settings['api_server']['insecure_bind_address'] }} \
+  {%- if kubernetes_settings['api_server']['etcd_ssl'] == True %}
+  --etcd-cafile={{ kubernetes_settings['api_server']['etcd_cafile'] }} \
+  {%- endif %}
+  --etcd-servers={{ kubernetes_settings['api_server']['etcd_servers']|join(",") }} \
+  {%- if kubernetes_settings['ssl'] == True %}
+  --client-ca-file={{ kubernetes_settings['api_server']['kubelet_certificate_authority'] }} \
+  --kubelet-certificate-authority={{ kubernetes_settings['api_server']['kubelet_certificate_authority'] }} \
+  --kubelet-client-certificate={{ kubernetes_settings['api_server']['tls_cert_file'] }} \
+  --kubelet-client-key={{ kubernetes_settings['api_server']['tls_private_key_file'] }} \
+  --tls-cert-file={{ kubernetes_settings['api_server']['tls_cert_file'] }} \
+  --tls-private-key-file={{ kubernetes_settings['api_server']['tls_private_key_file'] }} \
+  --service-account-key-file={{ kubernetes_settings['api_server']['service_account_key_file'] }} \
+  {%- endif %}
+  --service-cluster-ip-range={{ kubernetes_settings['api_server']['service_cluster_ip_range'] }} \
+  --service-node-port-range={{ kubernetes_settings['api_server']['service_node_port_range'] }} \
+  --token-auth-file={{ kubernetes_settings['config_directory'] }}/token.csv \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

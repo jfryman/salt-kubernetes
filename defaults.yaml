@@ -1,0 +1,93 @@
+---
+kubernetes:
+  version: 1.4.4
+  bin_directory: /opt/kubernetes/bin
+  addons_directory: /etc/kubernetes/addons
+  config_directory: /etc/kubernetes
+  ssl: true
+  ssl_directory: /etc/kubernetes/ssl
+  cni:
+    base_url: https://github.com/containernetworking/cni/releases/download
+    base_directory: /opt/cni
+    version: 0.3.0
+  install:
+    base_url: https://storage.googleapis.com/kubernetes-release/release
+  api_server:
+    admission_control:
+      - NamespaceLifecycle
+      - LimitRanger
+      - ServiceAccount
+      - DefaultStorageClass
+      - ResourceQuota
+    advertise_address: 127.0.0.1
+    count: 1
+    bind_address: 0.0.0.0
+    insecure_bind_address: 127.0.0.1
+    enable_swagger_ui: true
+    etcd_servers: []
+    etcd_ssl: true
+    etcd_cafile: /opt/etcd/ssl/ca.crt
+    kubelet_certificate_authority: /etc/kubernetes/ssl/ca.crt
+    service_account_key_file: /etc/kubernetes/ssl/kubernetes.key
+    tls_cert_file: /etc/kubernetes/ssl/kubernetes.crt
+    tls_private_key_file: /etc/kubernetes/ssl/kubernetes.key
+    service_cluster_ip_range: 10.32.0.0/16
+    service_node_port_range: 30000-32767
+  scheduler:
+    listen_ip: http://127.0.0.1:8080
+  controller_manager:
+    primary_controller: kube-01
+    allocate_node_cidrs: true
+    cluster_cidr: 10.32.0.0/16
+    cluster_name: kubernetes
+    leader_elect: true
+    master: http://127.0.0.1:8080
+    root_ca_file: /etc/kubernetes/ssl/ca.crt
+    service_account_private_key_file: /etc/kubernetes/ssl/kubernetes.key
+    service_cluster_ip_range: 10.32.0.0/24
+  kubeconfig:
+    user: kubelet
+    token: chAng3m3
+    cluster: kubernetes
+    ca_file: /etc/kubernetes/ssl/ca.crt
+    api_server: http://127.0.0.1:8080
+  kubelet:
+    config_directory: /var/lib/kubelet
+    api_servers:
+      - http://127.0.0.1:8080
+    cluster_dns: 10.32.0.10
+    cluster_domain: cluster.local
+    configure_cbr0: true
+    reconcile_cidr: true
+    serialize_image_pulls: false
+    tls_cert_file: /etc/kubernetes/ssl/kubernetes.crt
+    tls_private_key_file: /etc/kubernetes/ssl/kubernetes.key
+    cloud_provider: ""
+    network_plugin: kubenet
+    network_plugin_dir: /etc/cni/net.d
+  proxy:
+    master: https://127.0.0.1:6443
+    proxy_mode: iptables
+  weave:
+    version: 1.7.2
+    base_url: https://github.com/weaveworks/weave/releases/download
+    bin_directory: /opt/weave/bin
+    encrypt: false
+    encrypt_password: chAng3m3
+    mtu: 1410
+    disable_call_home: true
+    cluster_cidr: 10.32.0.0/16
+    awsvpc: false
+    peers: []
+    peer_filter: ""
+  tokens:
+    - token: chAng3m3
+      user: admin
+      uid: admin
+    - token: chAng3m3
+      user: scheduler
+      uid: scheduler
+    - token: chAng3m3
+      user: kublet
+      uid: kublet
+  authorization_policies: []

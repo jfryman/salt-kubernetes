@@ -1,0 +1,15 @@
+{%- from "kubernetes/map.jinja" import kubernetes_settings with context %}
+[Unit]
+ConditionFileIsExecutable={{ kubernetes_settings['bin_directory'] }}/kubectl
+ConditionPathIsDirectory={{ kubernetes_settings['addons_directory'] }}
+ConditionHost={{ kubernetes_settings['controller_manager']['primary_controller'] }}
+Description=Kubernetes Addons
+Documentation=http://kubernetes.io/
+Wants=kube-apiserver.service
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/bin/bash -c "while {{ kubernetes_settings['bin_directory'] }}/kubectl create -f {{ kubernetes_settings['addons_directory'] }}; do sleep 2; done"
+SuccessExitStatus=1
+[Install]
+WantedBy=multi-user.target

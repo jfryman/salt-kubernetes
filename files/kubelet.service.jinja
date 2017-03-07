@@ -1,0 +1,35 @@
+{%- from "kubernetes/map.jinja" import kubernetes_settings with context %}
+[Unit]
+Description=Kubernetes Kubelet
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStart={{ kubernetes_settings.bin_directory }}/kubelet \
+  --allow-privileged=true \
+  --api-servers={{ kubernetes_settings['kubelet']['api_servers']|join(",") }} \
+  --cloud-provider={{ kubernetes_settings.kubelet.cloud_provider }} \
+  --cluster-dns={{ kubernetes_settings.kubelet.cluster_dns }} \
+  --cluster-domain={{ kubernetes_settings.kubelet.cluster_domain }} \
+  --container-runtime=docker \
+  --docker=unix:///var/run/docker.sock \
+  --network-plugin={{ kubernetes_settings.kubelet.network_plugin }} \
+  {%- if kubernetes_settings.kubelet.network_plugin_dir %}
+  --network-plugin-dir={{ kubernetes_settings.kubelet.network_plugin_dir }} \
+  {%- endif %}
+  {%- if kubernetes_settings.kubelet.network_plugin == "kubenet" %}
+  --configure-cbr0={{ kubernetes_settings.kubelet.configure_cbr0 | lower }} \
+  --reconcile-cidr={{ kubernetes_settings.kubelet.reconcile_cidr | lower }} \
+  {%- endif %}
+  --serialize-image-pulls={{ kubernetes_settings.kubelet.serialize_image_pulls | lower }} \
+  --tls-cert-file={{ kubernetes_settings.kubelet.tls_cert_file }} \
+  --tls-private-key-file={{ kubernetes_settings.kubelet.tls_private_key_file }} \
+  --kubeconfig={{ kubernetes_settings.kubelet.config_directory }}/kubeconfig \
+  --v=2
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

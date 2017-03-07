@@ -1,0 +1,15 @@
+{%- from "kubernetes/map.jinja" import kubernetes_settings with context %}
+[Unit]
+Description=Kubernetes Scheduler
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+ExecStart={{ kubernetes_settings['bin_directory'] }}/kube-scheduler \
+  --leader-elect=true \
+  --master={{ kubernetes_settings['scheduler']['listen_ip'] }} \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

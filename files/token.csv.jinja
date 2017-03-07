@@ -1,0 +1,4 @@
+{%- from "kubernetes/map.jinja" import kubernetes_settings with context %}
+{%- for auth in kubernetes_settings['tokens'] %}
+{{ auth['token'] }},{{ auth['user'] }},{{ auth['uid'] }}
+{%- endfor %}

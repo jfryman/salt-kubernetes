@@ -1,0 +1,26 @@
+{%- from "kubernetes/map.jinja" import kubernetes_settings with context %}
+[Unit]
+Description=Kubernetes Controller Manager
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+ExecStart={{ kubernetes_settings['bin_directory'] }}/kube-controller-manager \
+  {%- if kubernetes_settings.controller_manager.allocate_node_cidrs %}
+  --allocate-node-cidrs={{ kubernetes_settings['controller_manager']['allocate_node_cidrs'] | lower }} \
+  {%- endif %}
+  {%- if kubernetes_settings.controller_manager.cluster_cidr %}
+  --cluster-cidr={{ kubernetes_settings['controller_manager']['cluster_cidr'] }} \
+  {%- endif %}
+  --cluster-name={{ kubernetes_settings['controller_manager']['cluster_name'] }} \
+  --leader-elect={{ kubernetes_settings['controller_manager']['leader_elect'] | lower }} \
+  --master={{ kubernetes_settings['controller_manager']['master'] }} \
+  --kubeconfig={{ kubernetes_settings['config_directory'] }}/kubeconfig \
+  --root-ca-file={{ kubernetes_settings['controller_manager']['root_ca_file'] }} \
+  --service-account-private-key-file={{ kubernetes_settings['controller_manager']['service_account_private_key_file'] }} \
+  --service-cluster-ip-range={{ kubernetes_settings['controller_manager']['service_cluster_ip_range'] }} \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

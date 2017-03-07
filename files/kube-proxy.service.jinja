@@ -1,0 +1,17 @@
+{%- from "kubernetes/map.jinja" import kubernetes_settings with context %}
+[Unit]
+Description=Kubernetes Kube Proxy
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+ExecStart={{ kubernetes_settings.bin_directory }}/kube-proxy \
+  --master={{ kubernetes_settings.proxy.master }} \
+  --kubeconfig={{ kubernetes_settings.kubelet.config_directory }}/kubeconfig \
+  --proxy-mode={{ kubernetes_settings.proxy.proxy_mode }} \
+  --v=2
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
